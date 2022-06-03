@@ -1,0 +1,89 @@
+#!/bin/bash
+
+# Required:
+# - toilet - http://manpages.ubuntu.com/manpages/bionic/man1/toilet.1.html
+# - xcowsay - http://manpages.ubuntu.com/manpages/bionic/man6/xcowsay.6.html
+
+##
+# Download WordPress
+##
+wp core download
+
+##
+# Create config file
+##
+read -p 'Database name: ' dbname
+# Set default value:
+# https://stackoverflow.com/a/6703730
+read -e -p 'Database user: ' -i 'root' dbuser
+read -sp 'Database password: ' dbpass
+echo
+wp config create --dbname=$dbname --dbuser=$dbuser --dbpass=$dbpass
+
+##
+# Install WordPress
+##
+read -p 'Site title: ' title
+read -p 'Site url: ' url
+read -e -p 'Admin user: ' -i 'admin' admin
+read -e -p 'Admin email: ' -i 'admin@local.loc' email
+read -sp 'Admin password: ' password
+
+wp core install --url=$url --title="$title" --admin_user=$admin --admin_password=$password --admin_email=$email
+
+##
+# Install and activate plugin Simple history from wp.org repo
+# https://wordpress.org/plugins/simple-history/
+##
+wp plugin install --activate simple-history
+
+##
+# Create new user with author role to limit dashboard access.
+# https://developer.wordpress.org/cli/commands/user/create/
+#
+# Add specific capabilities so that user have enough access to run website.
+# https://developer.wordpress.org/cli/commands/user/add-cap/
+##
+wp user create author author@local.loc --role=author --user_pass=$password
+wp user add-cap author edit_posts
+wp user add-cap author edit_pages
+wp user add-cap author manage_categories
+wp user add-cap author switch_themes
+wp user add-cap author activate_plugins
+wp user add-cap author edit_theme_options
+
+##
+# Remove role from default administrator user, it'll deny any access to dashboard.
+# Keep the password strong.
+#
+# https://developer.wordpress.org/cli/commands/user/remove-role/
+##
+wp user remove-role admin
+
+##
+# Install and activate Portuguese language
+##
+wp language core install pt_PT --activate
+
+##
+# Delete 'Hello World' post and create additional content
+#
+# wp post create ./post-content.txt --post_status=publish --post_title='About WordCamp Europe'
+#
+# https://developer.wordpress.org/cli/commands/post/generate/
+##
+wp post delete 1
+curl -N http://loripsum.net/api/5 | wp post generate --post_content --count=10
+
+toilet -f smmono9 -F metal -t Release the
+toilet -f smmono12 -F metal -t Kraken
+
+echo 'Do you want to release the Kraken? [yes/no]'
+read seeadmin;
+
+if [ "$seeadmin" = "yes" ];
+    then xcowsay Hi, I will be your Kraken today! :\)
+    wp admin
+    else echo "That's it, then. Have a wonderful day!"
+    wp simple-history list
+fi
