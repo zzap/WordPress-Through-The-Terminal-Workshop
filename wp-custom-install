@@ -32,6 +32,12 @@ read -sp 'Admin password: ' password
 wp core install --url=$url --title="$title" --admin_user=$admin --admin_password=$password --admin_email=$email
 
 ##
+# Set new permalinks structure and perform a hard flush
+# – update .htaccess rules as well as rewrite rules in database.
+##
+wp rewrite structure '/%year%/%monthnum%/%postname%/' --hard
+
+##
 # Install and activate plugin Simple history from wp.org repo
 # https://wordpress.org/plugins/simple-history/
 ##
