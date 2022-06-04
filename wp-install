@@ -1,0 +1,33 @@
+#!/bin/bash
+
+wp core download
+
+read -sp 'Database password: ' dbpass
+echo
+echo Thank you. Your config file is being created.
+
+wp config create --dbuser=root --dbpass=$dbpass --prompt
+
+read -p 'Site title: ' title
+read -p 'Site url: ' url
+read -p 'Admin user: ' admin
+read -p 'Admin email: ' email
+read -sp 'Admin password: ' password
+
+wp core install --url=$url --title=$title --admin_user=$admin --admin_password=$password --admin_email=$email
+
+wp rewrite structure '/%year%/%monthnum%/%postname%/' --hard
+
+sl
+
+toilet -f smmono9 -F metal -t Release the
+toilet -f smmono12 -F metal -t Kraken
+
+echo 'Do you want to release the Kraken? [yes/no]'
+read seeadmin;
+
+if [ "$seeadmin" = "yes" ];
+    then xcowsay Hi, I will be your Kraken today! :\)
+    wp admin
+    else echo "Oki doki, then. Have a wonderful day!"
+fi
