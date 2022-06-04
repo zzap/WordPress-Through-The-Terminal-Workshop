@@ -3,6 +3,7 @@
 # Required:
 # - toilet - http://manpages.ubuntu.com/manpages/bionic/man1/toilet.1.html
 # - xcowsay - http://manpages.ubuntu.com/manpages/bionic/man6/xcowsay.6.html
+# - sl (Steamed Locomotive) - https://www.linuxshelltips.com/sl-run-locomotive-train-in-terminal/
 
 ##
 # Download WordPress
@@ -34,6 +35,7 @@ wp core install --url=$url --title="$title" --admin_user=$admin --admin_password
 ##
 # Set new permalinks structure and perform a hard flush
 # – update .htaccess rules as well as rewrite rules in database.
+# https://developer.wordpress.org/cli/commands/rewrite/structure/
 ##
 wp rewrite structure '/%year%/%monthnum%/%postname%/' --hard
 
@@ -74,8 +76,6 @@ wp language core install pt_PT --activate
 ##
 # Delete 'Hello World' post and create additional content
 #
-# wp post create ./post-content.txt --post_status=publish --post_title='About WordCamp Europe'
-#
 # https://developer.wordpress.org/cli/commands/post/generate/
 ##
 wp post delete 1
@@ -83,6 +83,8 @@ curl -N http://loripsum.net/api/5 | wp post generate --post_content --count=10
 
 toilet -f smmono9 -F metal -t Release the
 toilet -f smmono12 -F metal -t Kraken
+
+sl
 
 echo 'Do you want to release the Kraken? [yes/no]'
 read seeadmin;
